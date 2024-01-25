@@ -78,11 +78,6 @@ namespace GeeksForLess_TestProject.Controllers
             return View(dataTable);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

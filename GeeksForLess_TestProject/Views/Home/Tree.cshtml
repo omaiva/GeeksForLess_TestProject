@@ -28,6 +28,10 @@
     li {
         margin-bottom: 10px;
     }
+
+    .toggle-icon {
+        cursor: pointer;
+    }
 </style>
 
 <h2>Tree Structure</h2>
@@ -38,8 +42,12 @@
         if (Convert.ToInt32(row["ParentId"]) == 0)
         {
             <li>
-                @row["Name"]
-                @RenderChildren(Model, Convert.ToInt32(row["ObjectId"]))
+                <span class="toggle-icon" data-toggle="collapse" data-target="#node-@(row["ObjectId"])">
+                    @row["Name"]
+                </span>
+                <div id="node-@(row["ObjectId"])" class="collapse">
+                    @RenderChildren(Model, Convert.ToInt32(row["ObjectId"]))
+                </div>
             </li>
         }
     }
@@ -67,3 +75,14 @@
         return new HtmlString(""); // Empty HTML content
     }
 }
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.toggle-icon').click(function () {
+            $(this).toggleClass('collapsed');
+        });
+    });
+</script>
