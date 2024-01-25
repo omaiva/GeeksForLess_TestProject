@@ -89,7 +89,7 @@ namespace GeeksForLess_TestProject.Models
         {
             string createTableQuery = $"CREATE TABLE {tableName} " +
                 $"(ObjectId int IDENTITY PRIMARY KEY, " +
-                $"Name nvarchar(100), " +
+                $"Name nvarchar(max), " +
                 $"ParentId int FOREIGN KEY REFERENCES {tableName}(ObjectId));";
 
             return createTableQuery;
