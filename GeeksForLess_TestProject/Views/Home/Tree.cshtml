@@ -1,35 +1,69 @@
-﻿@using System.Data;
+﻿@using System.Data
+@using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Mvc.Razor
 
 @model DataTable
 
 @{
-    ViewBag.Title = "Tree View";
+    ViewData["Title"] = "Tree Structure";
 }
 
-<div id="treeView"></div>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-<script>
-    $(document).ready(function () {
-        var data = @Html.Raw(Json.Serialize(Model));
-        renderTree(data, '#treeView');
-    });
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+        margin: 20px;
+    }
 
-    function renderTree(data, container) {
-        var tree = $('<ul>');
+    h2 {
+        color: #007bff;
+    }
 
-        $.each(data, function (key, value) {
-            var listItem = $('<li>');
-            listItem.append($('<span>').text(key));
+    ul {
+        list-style-type: none;
+    }
 
-            if (typeof value === 'object') {
-                listItem.append(renderTree(value, $('<ul>')));
-            } else {
-                listItem.append($('<span>').text(value));
+    li {
+        margin-bottom: 10px;
+    }
+</style>
+
+<h2>Tree Structure</h2>
+
+<ul class="pl-0">
+    @foreach (DataRow row in Model.Rows)
+    {
+        if (Convert.ToInt32(row["ParentId"]) == 0)
+        {
+            <li>
+                @row["Name"]
+                @RenderChildren(Model, Convert.ToInt32(row["ObjectId"]))
+            </li>
+        }
+    }
+</ul>
+
+@functions {
+    IHtmlContent RenderChildren(DataTable dataTable, object parentId)
+    {
+        var children = dataTable.Select($"ParentId = {parentId}");
+        if (children.Any())
+        {
+            var ulTag = new TagBuilder("ul");
+
+            foreach (var child in children)
+            {
+                var liTag = new TagBuilder("li");
+                liTag.InnerHtml.AppendHtml((string)child["Name"]);
+                liTag.InnerHtml.AppendHtml(RenderChildren(dataTable, (object)Convert.ToInt32(child["ObjectId"])));
+                ulTag.InnerHtml.AppendHtml(liTag);
             }
 
-            tree.append(listItem);
-        });
+            return ulTag;
+        }
 
-        $(container).append(tree);
+        return new HtmlString(""); // Empty HTML content
     }
-</script>
+}

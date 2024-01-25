@@ -1,5 +1,6 @@
 using GeeksForLess_TestProject.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Diagnostics;
 using System.Net;
@@ -76,8 +77,6 @@ namespace GeeksForLess_TestProject.Controllers
 
             return View(dataTable);
         }
-
-
 
         public IActionResult Privacy()
         {
