@@ -10,7 +10,7 @@ namespace GeeksForLess_TestProject.Models
         {
             var jsonObject = JObject.Parse(json);
             DataTable dataTable = new DataTable();
-            dataTable.Columns.Add("Id", typeof(int));
+            dataTable.Columns.Add("ObjectId", typeof(int));
             dataTable.Columns.Add("Name", typeof(string));
             dataTable.Columns.Add("ParentId", typeof(int));
 
@@ -26,7 +26,7 @@ namespace GeeksForLess_TestProject.Models
             {
                 int currentId = idCounter++;
                 DataRow row = dataTable.NewRow();
-                row["Id"] = currentId;
+                row["ObjectId"] = currentId;
                 row["ParentId"] = parentId;
                 row["Name"] = property.Name;
                 dataTable.Rows.Add(row);
@@ -39,7 +39,7 @@ namespace GeeksForLess_TestProject.Models
                 else
                 {
                     DataRow valueRow = dataTable.NewRow();
-                    valueRow["Id"] = idCounter++;
+                    valueRow["ObjectId"] = idCounter++;
                     valueRow["ParentId"] = currentId;
                     valueRow["Name"] = property.Value.ToString();
                     dataTable.Rows.Add(valueRow);
@@ -69,7 +69,7 @@ namespace GeeksForLess_TestProject.Models
 
                     foreach (DataColumn column in dataTable.Columns)
                     {
-                        sqlBulkCopy.ColumnMappings.Add(column.ColumnName, column.ColumnName);
+                        sqlBulkCopy.ColumnMappings.Add(new SqlBulkCopyColumnMapping(column.ColumnName, column.ColumnName));
                     }
 
                     sqlBulkCopy.WriteToServer(dataTable);
@@ -87,26 +87,12 @@ namespace GeeksForLess_TestProject.Models
 
         private static string BuildCreateTableQuery(DataTable dataTable, string tableName)
         {
-            string createTableQuery = $"CREATE TABLE {tableName} (";
-
-            foreach (DataColumn column in dataTable.Columns)
-            {
-                createTableQuery += $"{column.ColumnName} {GetSqlDbType(column.DataType)}, ";
-            }
-            
-            createTableQuery = createTableQuery.TrimEnd(',', ' ') + ")";
+            string createTableQuery = $"CREATE TABLE {tableName} " +
+                $"(ObjectId int IDENTITY PRIMARY KEY, " +
+                $"Name nvarchar(100), " +
+                $"ParentId int FOREIGN KEY REFERENCES {tableName}(ObjectId));";
 
             return createTableQuery;
-        }
-
-        private static string GetSqlDbType(Type dataType)
-        {
-            if (dataType == typeof(int))
-                return "INT";
-            else if (dataType == typeof(string))
-                return "NVARCHAR(MAX)";
-
-            return "NVARCHAR(MAX)";
         }
     }
 }

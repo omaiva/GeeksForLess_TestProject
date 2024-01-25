@@ -77,6 +77,8 @@ namespace GeeksForLess_TestProject.Controllers
             return View(dataTable);
         }
 
+
+
         public IActionResult Privacy()
         {
             return View();
