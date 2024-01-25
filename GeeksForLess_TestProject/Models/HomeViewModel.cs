@@ -10,49 +10,41 @@ namespace GeeksForLess_TestProject.Models
         {
             var jsonObject = JObject.Parse(json);
             DataTable dataTable = new DataTable();
-            AddColumns(jsonObject, dataTable, "");
-            AddRows(jsonObject, dataTable, "");
+            dataTable.Columns.Add("Id", typeof(int));
+            dataTable.Columns.Add("Name", typeof(string));
+            dataTable.Columns.Add("ParentId", typeof(int));
+
+            AddRows(jsonObject, dataTable, ref idCounter);
             return dataTable;
         }
 
-        private static void AddColumns(JObject jsonObject, DataTable dataTable, string prefix)
+        private static int idCounter = 1;
+
+        private static void AddRows(JObject jsonObject, DataTable dataTable, ref int idCounter, int parentId = 0)
         {
             foreach (var property in jsonObject.Properties())
             {
-                var columnName = string.IsNullOrEmpty(prefix) ? property.Name : $"{prefix}_{property.Name}";
+                int currentId = idCounter++;
+                DataRow row = dataTable.NewRow();
+                row["Id"] = currentId;
+                row["ParentId"] = parentId;
+                row["Name"] = property.Name;
+                dataTable.Rows.Add(row);
 
                 if (property.Value.Type == JTokenType.Object)
                 {
                     var nestedObject = (JObject)property.Value;
-                    AddColumns(nestedObject, dataTable, columnName);
+                    AddRows(nestedObject, dataTable, ref idCounter, currentId);
                 }
                 else
                 {
-                    dataTable.Columns.Add(columnName);
+                    DataRow valueRow = dataTable.NewRow();
+                    valueRow["Id"] = idCounter++;
+                    valueRow["ParentId"] = currentId;
+                    valueRow["Name"] = property.Value.ToString();
+                    dataTable.Rows.Add(valueRow);
                 }
             }
-        }
-
-        private static void AddRows(JObject jsonObject, DataTable dataTable, string prefix)
-        {
-            var row = dataTable.NewRow();
-
-            foreach (var property in jsonObject.Properties())
-            {
-                var columnName = string.IsNullOrEmpty(prefix) ? property.Name : $"{prefix}_{property.Name}";
-
-                if (property.Value.Type == JTokenType.Object)
-                {
-                    var nestedObject = (JObject)property.Value;
-                    AddRows(nestedObject, dataTable, columnName);
-                }
-                else
-                {
-                    row[columnName] = property.Value.ToString();
-                }
-            }
-
-            dataTable.Rows.Add(row);
         }
 
         public static void UploadDataTableToSql(DataTable dataTable, string destinationTableName)
