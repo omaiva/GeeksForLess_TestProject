@@ -1,0 +1,35 @@
+﻿@using System.Data;
+
+@model DataTable
+
+@{
+    ViewBag.Title = "Tree View";
+}
+
+<div id="treeView"></div>
+
+<script>
+    $(document).ready(function () {
+        var data = @Html.Raw(Json.Serialize(Model));
+        renderTree(data, '#treeView');
+    });
+
+    function renderTree(data, container) {
+        var tree = $('<ul>');
+
+        $.each(data, function (key, value) {
+            var listItem = $('<li>');
+            listItem.append($('<span>').text(key));
+
+            if (typeof value === 'object') {
+                listItem.append(renderTree(value, $('<ul>')));
+            } else {
+                listItem.append($('<span>').text(value));
+            }
+
+            tree.append(listItem);
+        });
+
+        $(container).append(tree);
+    }
+</script>
