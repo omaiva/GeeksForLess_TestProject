@@ -20,6 +20,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseRequestLocalization("en-EN");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

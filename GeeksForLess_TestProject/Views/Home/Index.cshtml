@@ -1,20 +1,23 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+
+    string uploadsFolder = System.IO.Path.Combine(ViewContext.HttpContext.Request.PathBase, "wwwroot/uploads");
+    bool isUploadsFolderNotEmpty = Directory.GetFiles(uploadsFolder).Any();
 }
 
 <div class="col-4">
-    <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Index">
+    <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Index" >
         <div class="mb-3">
             <input type="file" name="file" class="form-control" onchange="handleFileSelection()" />
         </div>
         <div class="mb-3">
-            <input type="submit" value="Upload file" class="btn btn-primary" id="uploadButton" disabled />
+            <input type="submit" value="Upload file" class="btn btn-primary" id="uploadButton" onclick="treeButtonEnable()" disabled />
             <span class="@((ViewBag.Message != null && ViewBag.Message.Contains("uploaded succesfully")) ? "text-success" : "text-danger")">
                 @ViewBag.Message
             </span>
         </div>
         <div class="mt-3">
-            <input type="button" value="See the Tree Structure" class="btn btn-secondary" onclick="redirectToTreeStructure()" />
+            <input type="button" value="See the Tree Structure" class="btn btn-secondary" id="showTreeButton" onclick="redirectToTreeStructure()" @(!isUploadsFolderNotEmpty ? "disabled" : "") />
         </div>
     </form>
 </div>
@@ -30,4 +33,10 @@
     function redirectToTreeStructure() {
         window.location.href = '/Home/Tree';
     }
+
+    // function treeButtonEnable() {
+    //     var treeButton = document.getElementById('showTreeButton');
+
+    //     treeButton.disabled = false;
+    // }
 </script>

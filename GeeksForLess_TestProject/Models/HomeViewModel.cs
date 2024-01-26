@@ -56,12 +56,10 @@ namespace GeeksForLess_TestProject.Models
             {
                 sqlConnection.Open();
 
-                using (SqlCommand command = new SqlCommand($"DROP TABLE {destinationTableName}", sqlConnection))
+                using (SqlCommand command = new SqlCommand($"TRUNCATE TABLE {destinationTableName}", sqlConnection))
                 {
                     command.ExecuteNonQuery();
                 }
-
-                CreateDestinationTable(sqlConnection, dataTable, destinationTableName);
 
                 using (SqlBulkCopy sqlBulkCopy = new SqlBulkCopy(sqlConnection))
                 {
@@ -75,24 +73,6 @@ namespace GeeksForLess_TestProject.Models
                     sqlBulkCopy.WriteToServer(dataTable);
                 }
             }
-        }
-
-        private static void CreateDestinationTable(SqlConnection sqlConnection, DataTable dataTable, string tableName)
-        {
-            using (SqlCommand command = new SqlCommand(BuildCreateTableQuery(dataTable, tableName), sqlConnection))
-            {
-                command.ExecuteNonQuery();
-            }
-        }
-
-        private static string BuildCreateTableQuery(DataTable dataTable, string tableName)
-        {
-            string createTableQuery = $"CREATE TABLE {tableName} " +
-                $"(ObjectId int IDENTITY PRIMARY KEY, " +
-                $"Name nvarchar(max), " +
-                $"ParentId int FOREIGN KEY REFERENCES {tableName}(ObjectId));";
-
-            return createTableQuery;
         }
     }
 }

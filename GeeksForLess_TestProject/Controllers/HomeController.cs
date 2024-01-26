@@ -45,10 +45,6 @@ namespace GeeksForLess_TestProject.Controllers
             if (!Directory.Exists(uploadsFolder))
             {
                 Directory.CreateDirectory(uploadsFolder);
-            } else
-            {
-                Directory.Delete(uploadsFolder, true);
-                Directory.CreateDirectory(uploadsFolder);
             }
 
 
