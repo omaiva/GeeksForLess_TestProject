@@ -73,7 +73,7 @@ namespace GeeksForLess_TestProject.Controllers
             var json = webClient.DownloadString(fileName);
             DataTable dataTable = HomeViewModel.ConvertToDataTable(json);
 
-            HomeViewModel.UploadDataTableToSql(dataTable, "testTable");
+            HomeViewModel.UploadDataTableToSql(dataTable, "testTable", _webHost.WebRootPath);
 
             return View(dataTable);
         }

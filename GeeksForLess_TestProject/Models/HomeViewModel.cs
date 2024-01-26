@@ -48,9 +48,9 @@ namespace GeeksForLess_TestProject.Models
             }
         }
 
-        public static void UploadDataTableToSql(DataTable dataTable, string destinationTableName)
+        public static void UploadDataTableToSql(DataTable dataTable, string destinationTableName, string webRootPath)
         {
-            string connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"D:\\Programming\\c#\\projects\\ASP.NET Core\\GeeksForLess_TestProject\\GeeksForLess_TestProject\\Database.mdf\";Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True";
+            string connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"" + webRootPath + "\\Database.mdf\";Integrated Security=True;Connect Timeout=30";
 
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
