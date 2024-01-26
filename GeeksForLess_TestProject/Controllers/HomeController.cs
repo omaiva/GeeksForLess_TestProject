@@ -19,7 +19,17 @@ namespace GeeksForLess_TestProject.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index() => View();
+        public IActionResult Index()
+        {
+            string uploadsFolder = Path.Combine(_webHost.WebRootPath, "uploads");
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Index(IFormFile file)
