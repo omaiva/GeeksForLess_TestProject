@@ -6,6 +6,8 @@ namespace GeeksForLess_TestProject.Models
 {
     public class HomeViewModel
     {
+        private static int idCounter = 1;
+
         public static DataTable ConvertToDataTable(string json)
         {
             var jsonObject = JObject.Parse(json);
@@ -15,10 +17,9 @@ namespace GeeksForLess_TestProject.Models
             dataTable.Columns.Add("ParentId", typeof(int));
 
             AddRows(jsonObject, dataTable, ref idCounter);
+            idCounter = 1;
             return dataTable;
         }
-
-        private static int idCounter = 1;
 
         private static void AddRows(JObject jsonObject, DataTable dataTable, ref int idCounter, int parentId = 0)
         {
@@ -56,10 +57,12 @@ namespace GeeksForLess_TestProject.Models
             {
                 sqlConnection.Open();
 
-                using (SqlCommand command = new SqlCommand($"TRUNCATE TABLE {destinationTableName}", sqlConnection))
+                using (SqlCommand command = new SqlCommand($"DROP TABLE {destinationTableName}", sqlConnection))
                 {
                     command.ExecuteNonQuery();
                 }
+
+                CreateTable(sqlConnection,destinationTableName);
 
                 using (SqlBulkCopy sqlBulkCopy = new SqlBulkCopy(sqlConnection))
                 {
@@ -72,6 +75,17 @@ namespace GeeksForLess_TestProject.Models
 
                     sqlBulkCopy.WriteToServer(dataTable);
                 }
+            }
+        }
+
+        private static void CreateTable(SqlConnection sqlConnection, string destinationTableName)
+        {
+            using (SqlCommand command = new SqlCommand($"CREATE TABLE {destinationTableName} (" +
+                $"ObjectId int IDENTITY PRIMARY KEY," +
+                $"Name nvarchar(max)," +
+                $"ParentId int FOREIGN KEY REFERENCES {destinationTableName}(ObjectId) );", sqlConnection))
+            {
+                command.ExecuteNonQuery();
             }
         }
     }
