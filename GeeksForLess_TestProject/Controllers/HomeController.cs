@@ -71,9 +71,9 @@ namespace GeeksForLess_TestProject.Controllers
             var webClient = new WebClient();
             string fileName = Directory.GetFiles(uploadsFolder).First();
             var json = webClient.DownloadString(fileName);
-            DataTable dataTable = HomeViewModel.ConvertToDataTable(json);
+            DataTable dataTable = DataTableModel.ConvertToDataTable(json);
 
-            HomeViewModel.UploadDataTableToSql(dataTable, "testTable", _webHost.WebRootPath);
+            DataBaseModel.UploadDataTableToSql(dataTable, "testTable", _webHost.WebRootPath);
 
             return View(dataTable);
         }
